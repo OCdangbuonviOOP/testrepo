@@ -1,0 +1,134 @@
+Bài 3.1
+1. code mẫu
+2)trái -> phải
+ if (mode == 1)
+{
+LED_Value = (LED_Value >> 1) | (LED_Value << 7);
+}
+if (LED_Value & 0x80)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);
+if (LED_Value & 0x40)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);
+if (LED_Value & 0x20)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
+if (LED_Value & 0x10)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);
+if (LED_Value & 0x8)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+if (LED_Value & 0x4)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+if (LED_Value & 0x2)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+if (LED_Value & 0x1)
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+else
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);}
+3) bật all xong tắt
+if (mode == 1)
+	    {
+	        LED_Value = (LED_Value >> 1) | (LED_Value << 7);
+	    }
+	    uint16_t led_pins[8] = {GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11,
+	                            GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15};
+
+	    for (int i = 0; i < 8; i++)
+	    {
+	        HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_SET);
+	    }
+
+	    HAL_Delay(500);
+	    for (int i = 0; i < 8; i++)
+	    {
+	        HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_RESET);
+	    }
+4)
+	    uint16_t led_pins[8] = {GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11,
+	                            GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15};
+
+	    int m = 1;
+
+	    while (1)
+	    {
+	        if (m % 2 == 1)
+	        {
+	            for (int i = 0; i < 4; i++)
+	            {
+	                HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_SET);
+	                HAL_GPIO_WritePin(GPIOD, led_pins[7 - i], GPIO_PIN_SET);
+	                HAL_Delay(200);
+
+	                HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_RESET);
+	                HAL_GPIO_WritePin(GPIOD, led_pins[7 - i], GPIO_PIN_RESET);
+	            }
+	        }
+	        else
+	        {
+	            for (int i = 3; i >= 0; i--)
+	            {
+	                HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_SET);
+	                HAL_GPIO_WritePin(GPIOD, led_pins[7 - i], GPIO_PIN_SET);
+	                HAL_Delay(200);
+	                HAL_GPIO_WritePin(GPIOD, led_pins[i], GPIO_PIN_RESET);
+	                HAL_GPIO_WritePin(GPIOD, led_pins[7 - i], GPIO_PIN_RESET);
+	            }
+	        }
+
+	        HAL_Delay(500);
+	        m++;
+	    }
+Bài 3.2
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (GPIO_Pin == GPIO_PIN_0) {
+        display_value++; 
+        if (display_value > 99) {
+            display_value = 0;
+        }
+        Set7SegDisplayValue(display_value);
+    }
+}
+Bài 4
+if (command_ok)
+	  {
+		  char buf[256];
+		  IrDecode();
+		  sprintf(buf, "%02x%02x%02x%02x\n", irda_cmd[0], irda_cmd[1], irda_cmd[2], irda_cmd[3]);
+		  HAL_UART_Transmit(&huart1, (const uint8_t *)buf, strlen(buf), 2);
+		  command_ok = 0;
+		 if(irda_cmd[2]==69){
+			 Set7SegDisplayValue(1);
+			 Run7SegDisplay();
+			 HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
+		 }
+		 else if(irda_cmd[2]==70){
+			 Set7SegDisplayValue(2);
+			 Run7SegDisplay();
+			 HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
+		 }
+		 else if(irda_cmd[2]==71){
+			 Set7SegDisplayValue(3);
+			 Run7SegDisplay();
+			 HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
+		 }
+		 else if(irda_cmd[2]==68){
+			 Set7SegDisplayValue(4);
+			 Run7SegDisplay();
+			 HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
+		 }
+		 else if(irda_cmd[2]==28){
+			 HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3,!HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_3));
+		 }
+	  }
